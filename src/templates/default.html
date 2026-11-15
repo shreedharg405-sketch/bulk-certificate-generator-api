@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Certificate of Achievement - {{name}}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@300;400;500;600;700&family=Pinyon+Script&display=swap');
+
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 297mm;
+      height: 210mm;
+      margin: 0;
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      overflow: hidden;
+    }
+
+    .certificate-container {
+      width: 285mm;
+      height: 198mm;
+      background: #ffffff;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16mm 18mm;
+    }
+
+    /* Elegant double border */
+    .border-outer {
+      position: absolute;
+      inset: 8mm;
+      border: 2px solid #b45309;
+      pointer-events: none;
+      border-radius: 8px;
+    }
+
+    .border-inner {
+      position: absolute;
+      inset: 10.5mm;
+      border: 1px solid #d97706;
+      opacity: 0.7;
+      pointer-events: none;
+      border-radius: 6px;
+    }
+
+    .corner-decor {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border-color: #92400e;
+      border-style: solid;
+      pointer-events: none;
+    }
+    .corner-tl { top: 7mm; left: 7mm; border-width: 4px 0 0 4px; }
+    .corner-tr { top: 7mm; right: 7mm; border-width: 4px 4px 0 0; }
+    .corner-bl { bottom: 7mm; left: 7mm; border-width: 0 0 4px 4px; }
+    .corner-br { bottom: 7mm; right: 7mm; border-width: 0 4px 4px 0; }
+
+    /* Subtle background watermark pattern */
+    .watermark-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(245, 158, 11, 0.04) 0%, rgba(255, 255, 255, 0) 70%),
+                  radial-gradient(ellipse at 80% 20%, rgba(30, 58, 138, 0.03) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Header Section */
+    .header {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .organization-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #78350f;
+      background: #fef3c7;
+      padding: 5px 16px;
+      border-radius: 9999px;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      font-family: 'Cinzel', serif;
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: #1e293b;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* Body Section */
+    .body {
+      text-align: center;
+      margin: 10px 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .presented-to {
+      font-size: 13px;
+      font-style: italic;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+
+    .recipient-name {
+      font-family: 'Cinzel', serif;
+      font-size: 38px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 1px;
+      border-bottom: 2px solid #d97706;
+      display: inline-block;
+      padding: 0 25px 6px 25px;
+      margin-bottom: 14px;
+    }
+
+    .achievement-text {
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.6;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .course-title {
+      font-weight: 700;
+      color: #1e3a8a;
+      font-size: 16px;
+    }
+
+    .grade-badge {
+      display: inline-block;
+      margin-top: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      color: #065f46;
+      background: #d1fae5;
+      padding: 3px 12px;
+      border-radius: 4px;
+    }
+
+    /* Footer / Signatures / QR Code Section */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      position: relative;
+      z-index: 2;
+      padding-top: 10px;
+    }
+
+    .meta-box {
+      text-align: left;
+      font-size: 11px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .meta-item {
+      margin-bottom: 3px;
+    }
+
+    .meta-label {
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .cert-id-code {
+      font-family: monospace;
+      font-weight: 700;
+      color: #0f172a;
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .signatures {
+      display: flex;
+      gap: 40px;
+      align-items: flex-end;
+    }
+
+    .signature-block {
+      text-align: center;
+      width: 140px;
+    }
+
+    .signature-line {
+      height: 1px;
+      background: #94a3b8;
+      margin-bottom: 6px;
+    }
+
+    .signature-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #334155;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .signature-handwriting {
+      font-family: 'Pinyon Script', cursive;
+      font-size: 26px;
+      color: #1e3a8a;
+      height: 32px;
+      line-height: 32px;
+    }
+
+    .qr-verification {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f8fafc;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .qr-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 4px;
+      background: #ffffff;
+    }
+
+    .qr-text {
+      text-align: left;
+      font-size: 9px;
+      color: #64748b;
+      line-height: 1.3;
+      max-width: 110px;
+    }
+
+    .qr-text strong {
+      display: block;
+      color: #0f172a;
+      font-size: 10px;
+      margin-bottom: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="certificate-container">
+    <div class="watermark-bg"></div>
+    <div class="border-outer"></div>
+    <div class="border-inner"></div>
+    <div class="corner-decor corner-tl"></div>
+    <div class="corner-decor corner-tr"></div>
+    <div class="corner-decor corner-bl"></div>
+    <div class="corner-decor corner-br"></div>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="organization-badge">
+        ✦ {{#if organization}}{{organization}}{{else}}Global Academy of Technology & Engineering{{/if}} ✦
+      </div>
+      <h1 class="title">Certificate of Achievement</h1>
+      <p class="subtitle">This is officially presented in recognition of excellence</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="body">
+      <p class="presented-to">This certificate is proudly awarded to</p>
+      <div class="recipient-name">{{name}}</div>
+      <p class="achievement-text">
+        For successfully completing all rigorous curriculum requirements and demonstrating outstanding mastery in
+        <br>
+        <span class="course-title">{{#if course_title}}{{course_title}}{{else}}Advanced Engineering & Applied Technology{{/if}}</span>
+      </p>
+      {{#if grade}}
+      <div class="grade-badge">Grade: {{grade}}</div>
+      {{/if}}
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="meta-box">
+        <div class="meta-item"><span class="meta-label">Issue Date:</span> {{issue_date}}</div>
+        <div class="meta-item"><span class="meta-label">Certificate ID:</span> <span class="cert-id-code">{{certificate_id}}</span></div>
+        <div class="meta-item"><span class="meta-label">Recipient:</span> {{email}}</div>
+      </div>
+
+      <div class="signatures">
+        <div class="signature-block">
+          <div class="signature-handwriting">Dr. Sarah Lin</div>
+          <div class="signature-line"></div>
+          <div class="signature-title">Academic Director</div>
+        </div>
+        <div class="signature-block">
+          <div class="signature-handwriting">Marcus Vance</div>
+          <div class="signature-line"></div>
+          <div class="signature-title">Board Chairperson</div>
+        </div>
+      </div>
+
+      <div class="qr-verification">
+        <img class="qr-image" src="{{qr_code}}" alt="Verification QR Code" />
+        <div class="qr-text">
+          <strong>Scan to Verify</strong>
+          Authenticity verified at {{verification_url}}
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

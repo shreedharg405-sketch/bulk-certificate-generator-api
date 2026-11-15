@@ -1,0 +1,58 @@
+services:
+  # Redis cache and queue broker for BullMQ
+  redis:
+    image: redis:7-alpine
+    container_name: certiflow-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # API HTTP Service
+  api:
+    build: .
+    container_name: certiflow-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - HOST=0.0.0.0
+      - APP_URL=http://localhost:3000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - QUEUE_DRIVER=bullmq
+      - CHUNK_SIZE=50
+      - MAX_CONCURRENT_RENDERS=5
+    volumes:
+      - cert_storage:/app/storage
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # Dedicated Scalable Worker Process
+  worker:
+    build: .
+    container_name: certiflow-worker
+    restart: unless-stopped
+    command: ["node", "dist/queues/worker.runner.js"]
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - QUEUE_DRIVER=bullmq
+      - MAX_CONCURRENT_RENDERS=5
+    volumes:
+      - cert_storage:/app/storage
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis_data:
+  cert_storage:

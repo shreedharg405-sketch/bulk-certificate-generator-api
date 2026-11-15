@@ -1,0 +1,5 @@
+name,email,issue_date,certificate_id,course_title,grade
+Valid Student,valid@example.com,2026-10-01,CERT-VALID-01,Software Engineering,A
+,invalid-no-name@example.com,2026-10-01,CERT-ERR-02,Software Engineering,B
+Invalid Email,not-an-email,2026-10-01,CERT-ERR-03,Software Engineering,C
+No Date Student,nodate@example.com,,CERT-ERR-04,Software Engineering,B

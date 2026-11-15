@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CertiFlow — Production Bulk Certificate Generator & Verifier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <div class="bg-glow-orb orb-1"></div>
+  <div class="bg-glow-orb orb-2"></div>
+  <div class="bg-glow-orb orb-3"></div>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">CertiFlow</span>
+          <span class="brand-tag">BULK API ENGINE</span>
+        </div>
+      </div>
+
+      <div class="nav-badges">
+        <div class="engine-badge" id="engineStatusBadge">
+          <span class="status-dot"></span>
+          <span id="engineStatusText">Queue Worker: Ready</span>
+        </div>
+        <a href="#verifier-section" class="nav-link">Verify Credentials</a>
+        <a href="/api-docs" class="nav-link doc-btn">API Docs</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Hero Header -->
+    <section class="hero-section">
+      <div class="hero-badge">⚡ Asynchronous Decoupled Worker System</div>
+      <h1 class="hero-title">High-Velocity Bulk Certificate <span class="gradient-text">Engine</span></h1>
+      <p class="hero-desc">
+        Ingest thousands of recipient records via CSV/Excel, render pixel-perfect certificates with dynamic QR code authentication, and download verified zip archives in real-time.
+      </p>
+    </section>
+
+    <!-- App Grid -->
+    <div class="dashboard-grid">
+      <!-- Left Column: Job Creator -->
+      <section class="card glass-card">
+        <div class="card-header">
+          <div class="card-icon">🚀</div>
+          <div>
+            <h2 class="card-title">Launch Bulk Generation Job</h2>
+            <p class="card-subtitle">Upload recipients and generate verifiable credentials</p>
+          </div>
+        </div>
+
+        <form id="jobForm" class="job-form">
+          <!-- Job Name -->
+          <div class="form-group">
+            <label for="jobNameInput" class="form-label">Job Title / Cohort Name</label>
+            <input type="text" id="jobNameInput" class="form-input" placeholder="e.g., Cloud Architecture Fall 2026 Batch" />
+          </div>
+
+          <!-- Recipient File Upload -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label">Recipient Data File <span class="required">*</span></label>
+              <a href="/sample_recipients.csv" download class="sample-link">Download Sample CSV</a>
+            </div>
+            
+            <div class="drop-zone" id="fileDropZone">
+              <input type="file" id="recipientFileInput" class="file-input" accept=".csv, .xlsx, .xls" />
+              <div class="drop-zone-content">
+                <div class="upload-icon">
+                  <svg width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                </div>
+                <div class="drop-zone-text" id="fileDropText">Drag & drop your CSV or Excel file, or <span class="browse-btn">Browse</span></div>
+                <div class="drop-zone-sub">Supports .csv, .xlsx, .xls (name, email, issue_date, certificate_id)</div>
+              </div>
+            </div>
+            <div id="fileSelectedBadge" class="file-badge hidden"></div>
+          </div>
+
+          <!-- Output Format -->
+          <div class="form-group">
+            <label class="form-label">Output Document Format</label>
+            <div class="format-toggle">
+              <label class="toggle-option">
+                <input type="radio" name="output_format" value="pdf" checked />
+                <span class="toggle-box">
+                  <strong>PDF Document</strong>
+                  <small>Print-ready vector A4 landscape</small>
+                </span>
+              </label>
+              <label class="toggle-option">
+                <input type="radio" name="output_format" value="png" />
+                <span class="toggle-box">
+                  <strong>High-Res PNG</strong>
+                  <small>Crisp 2x retina image format</small>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Template Options -->
+          <div class="form-group">
+            <div class="template-header">
+              <label class="form-label">HTML/CSS Certificate Template</label>
+              <span class="template-pill">Uses Default Luxury Gold Template</span>
+            </div>
+            <details class="template-details">
+              <summary class="details-summary">Use Custom Template HTML (Optional)</summary>
+              <div class="template-body">
+                <div class="tag-list">
+                  <span class="tag"><code>{{name}}</code></span>
+                  <span class="tag"><code>{{email}}</code></span>
+                  <span class="tag"><code>{{issue_date}}</code></span>
+                  <span class="tag"><code>{{certificate_id}}</code></span>
+                  <span class="tag"><code>{{qr_code}}</code></span>
+                  <span class="tag"><code>{{course_title}}</code></span>
+                  <span class="tag"><code>{{grade}}</code></span>
+                  <span class="tag"><code>{{organization}}</code></span>
+                </div>
+                <textarea id="customTemplateInput" class="form-textarea" placeholder="Paste custom HTML certificate code with placeholders..."></textarea>
+              </div>
+            </details>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="submitJobBtn" class="btn btn-primary submit-btn">
+            <span class="btn-spinner hidden" id="submitSpinner"></span>
+            <span id="submitBtnText">Dispatch Batch Generation Job</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Right Column: Live Job Monitor -->
+      <section class="card glass-card">
+        <div class="card-header">
+          <div class="card-icon">⚡</div>
+          <div>
+            <h2 class="card-title">Real-Time Job Telemetry</h2>
+            <p class="card-subtitle">Live status tracking & instant package streaming</p>
+          </div>
+        </div>
+
+        <!-- Empty state when no job is active -->
+        <div id="noJobActiveView" class="empty-telemetry">
+          <div class="pulse-ring"></div>
+          <h3>Awaiting Generation Dispatch</h3>
+          <p>Submit a batch job on the left or select a previous job from the audit log below to monitor live rendering progress.</p>
+        </div>
+
+        <!-- Active / Selected Job View -->
+        <div id="activeJobView" class="job-monitor hidden">
+          <div class="job-meta-card">
+            <div class="job-info-row">
+              <div>
+                <span class="job-id-label">JOB ID:</span>
+                <span class="job-id-val" id="monitorJobId">job_12345</span>
+              </div>
+              <div id="monitorStatusBadge" class="status-badge status-queued">QUEUED</div>
+            </div>
+            <div class="job-title-sub" id="monitorJobName">Batch Certificate Job</div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-section">
+            <div class="progress-labels">
+              <span class="progress-text">Processing Pipeline</span>
+              <span class="progress-val" id="monitorProgressPercent">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-bar-fill" id="monitorProgressBar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Metrics Counter Grid -->
+          <div class="metrics-grid">
+            <div class="metric-box">
+              <span class="metric-label">Total Records</span>
+              <span class="metric-val" id="monitorTotalCount">0</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Processed</span>
+              <span class="metric-val text-accent" id="monitorProcessedCount">0</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Failed</span>
+              <span class="metric-val text-danger" id="monitorFailedCount">0</span>
+            </div>
+          </div>
+
+          <!-- Download Action Card -->
+          <div id="downloadContainer" class="download-banner hidden">
+            <div class="download-info">
+              <div class="download-icon">📦</div>
+              <div>
+                <h4>All Certificates Generated</h4>
+                <p>ZIP package ready for immediate download</p>
+              </div>
+            </div>
+            <a id="downloadZipLink" href="#" class="btn btn-success" download>Download .ZIP Bundle</a>
+          </div>
+
+          <!-- Live Log Console -->
+          <div class="terminal-box">
+            <div class="terminal-header">
+              <span>WORKER EVENT STREAM</span>
+              <span class="live-dot"></span>
+            </div>
+            <div class="terminal-body" id="workerEventLog">
+              <div class="log-line text-muted">[System] Worker engine awaiting job dispatch...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Verification Section -->
+    <section class="card glass-card verification-section" id="verifier-section">
+      <div class="card-header">
+        <div class="card-icon">🛡️</div>
+        <div>
+          <h2 class="card-title">Authenticity Verification Portal</h2>
+          <p class="card-subtitle">Verify cryptographic QR / ID credentials against immutable ledger records</p>
+        </div>
+      </div>
+
+      <div class="verifier-form">
+        <div class="verifier-input-wrap">
+          <input type="text" id="verifyCertIdInput" class="form-input mono-font" placeholder="Enter Certificate ID (e.g. CERT-2026-001)" />
+          <button id="verifyBtn" class="btn btn-secondary">Verify Authenticity</button>
+        </div>
+      </div>
+
+      <div id="verifyResultContainer" class="verify-result hidden">
+        <!-- Dynamic Result Injected Here -->
+      </div>
+    </section>
+
+    <!-- Recent Jobs Audit Log -->
+    <section class="card glass-card audit-section">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <div class="header-split">
+          <div>
+            <h2 class="card-title">Job Audit Log & History</h2>
+            <p class="card-subtitle">Recent bulk batch executions</p>
+          </div>
+          <button id="refreshJobsBtn" class="btn btn-sm btn-outline">Refresh</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>Job ID</th>
+              <th>Cohort Name</th>
+              <th>Status</th>
+              <th>Progress</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="recentJobsTableBody">
+            <tr>
+              <td colspan="6" class="text-center text-muted">Loading recent jobs...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <p>© 2026 CertiFlow Engine. Built with Node.js, TypeScript, BullMQ, Puppeteer & SQLite.</p>
+      <div class="footer-links">
+        <a href="/api/v1/certificates/jobs">API Endpoint</a>
+        <a href="/health">System Health</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>
